@@ -1,0 +1,8 @@
+{
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/apps/web/src/app/page.tsx"
+        }
+    ]
+}
