@@ -179,7 +179,9 @@ export default function ATPDashboardCompact() {
                 <select
                   value={gender}
                   onChange={(e) => setGender(e.target.value)}
-                  className="w-full bg-white border border-[#E5E5E5] rounded-xl px-4 py-3 outline-none focus:border-[#FCA311]"
+                  className={`w-full bg-white border border-[#E5E5E5] rounded-xl px-4 py-3 outline-none focus:border-[#FCA311] ${
+                    gender ? "text-[#14213D]" : "text-[#B8B8B8]"
+                  }`}
                 >
                   <option value="">Pilih Gender</option>
                   <option value="Male">Male</option>
@@ -196,7 +198,9 @@ export default function ATPDashboardCompact() {
                 <select
                   value={aktivitas}
                   onChange={(e) => setAktivitas(e.target.value)}
-                  className="w-full bg-white border border-[#E5E5E5] rounded-xl px-4 py-3 outline-none focus:border-[#FCA311]"
+                  className={`w-full bg-white border border-[#E5E5E5] rounded-xl px-4 py-3 outline-none focus:border-[#FCA311] ${
+                    aktivitas ? "text-[#14213D]" : "text-[#B8B8B8]"
+                  }`}
                 >
                   <option value="">Pilih Aktivitas</option>
                   {ACTIVITIES.map((act) => (
@@ -354,7 +358,7 @@ function InputBox({
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full bg-white border border-[#E5E5E5] rounded-xl px-4 py-3 pr-14 outline-none focus:border-[#FCA311]"
+          className="w-full bg-white text-[#14213D] placeholder:text-[#B8B8B8] border border-[#E5E5E5] rounded-xl px-4 py-3 pr-14 outline-none focus:border-[#FCA311] focus:text-[#14213D]"
         />
 
         <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-[#777]">
