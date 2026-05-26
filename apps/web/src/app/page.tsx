@@ -71,7 +71,7 @@ export default function ATPDashboardCompact() {
     setHasil(null);
 
     try {
-      const API_BASE = "https://if3211tugas-besarrespirasi-sel-produksi-atp-production.up.railway.app";
+      const API_BASE = process.env.NEXT_PUBLIC_API_BASE;
       const response = await fetch(`${API_BASE}/calculator/calculate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
