@@ -44,6 +44,22 @@ ACTIVITY_MET: dict[str, float] = {
     "Winter Activities": 8.95,
 }
 
+ACTIVITY_COLUMNS: list[str] = [
+    "Activity_Bicycling",
+    "Activity_Conditioning Exercise",
+    "Activity_Dancing",
+    "Activity_Fishing & Hunting",
+    "Activity_House Chores",
+    "Activity_Miscellaneous",
+    "Activity_Occupation",
+    "Activity_Running",
+    "Activity_Sports",
+    "Activity_Transportation",
+    "Activity_Walking",
+    "Activity_Water Activities",
+    "Activity_Winter Activities",
+]
+
 WORKOUT_DESCRIPTIONS: dict[str, str] = {
     "Cardio": "Latihan kardiovaskular: lari, bersepeda, berenang, atau aktivitas aerobik lainnya",
     "HIIT": "High-Intensity Interval Training: latihan intensitas tinggi dengan jeda pemulihan singkat",
@@ -74,17 +90,20 @@ def main() -> None:
 
     bmi = weight / (height ** 2)
     act_met = ACTIVITY_MET.get(activity, 5.0)
-    intensity = intensity_level(act_met)
 
-    features = pd.DataFrame([{
+    features = {
         "Age": age,
-        "Gender": gender,
-        "BMI_Calculated": bmi,
+        "Weight (kg)": weight,
+        "Height (m)": height,
         "Session_Duration (hours)": duration_hours,
-        "Activity_MET": act_met,
-        "Activity": activity,
-        "Intensity_Level": intensity,
-    }])
+        "Gender_Female": 1.0 if gender.lower() == "female" else 0.0,
+        "Gender_Male": 1.0 if gender.lower() == "male" else 0.0,
+    }
+
+    for column_name in ACTIVITY_COLUMNS:
+        features[column_name] = 1.0 if column_name == f"Activity_{activity}" else 0.0
+
+    features = pd.DataFrame([features])
 
     lr_model = joblib.load(ARTIFACTS_DIR / "linear_regression.joblib")
     rf_model = joblib.load(ARTIFACTS_DIR / "random_forest_regressor.joblib")
@@ -106,7 +125,7 @@ def main() -> None:
         "workout_type": workout_type,
         "description": description,
         "bmi": round(bmi, 2),
-        "intensity_level": intensity,
+        "intensity_level": intensity_level(act_met),
     }))
 
 
