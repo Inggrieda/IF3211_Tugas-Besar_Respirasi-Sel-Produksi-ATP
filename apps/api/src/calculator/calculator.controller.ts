@@ -22,6 +22,10 @@ export class CalculatorController {
   @ApiResponse({ status: 201, type: CalculateResponseDto, description: 'Hasil kalkulasi berhasil' })
   @ApiResponse({ status: 400, description: 'Input tidak valid' })
   calculate(@Body() dto: CalculateRequestDto): Promise<CalculateResponseDto> {
+    this.logger.log(
+      `calculate request received: activity=${dto.activity}, weight=${dto.weight}, duration=${dto.duration}, age=${dto.age}, gender=${dto.gender}`,
+    );
+
     return this.calculatorService.calculate(dto);
   }
 }

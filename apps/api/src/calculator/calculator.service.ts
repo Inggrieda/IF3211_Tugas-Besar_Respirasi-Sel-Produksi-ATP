@@ -16,12 +16,23 @@ interface PythonResult {
 
 @Injectable()
 export class CalculatorService {
+  private readonly logger = new Logger(CalculatorService.name);
   private readonly predictScript = path.resolve(__dirname, '../../../model/predict.py');
+
+  private getPythonCommand(): string {
+    if (process.env.PYTHON_BIN) {
+      return process.env.PYTHON_BIN;
+    }
+
+    return process.platform === 'win32' ? 'python' : 'python3';
+  }
 
   private runInference(input: CalculateRequestDto): Promise<PythonResult> {
     return new Promise((resolve, reject) => {
-      // Ganti 'python' dengan 'python3' jika environment Linux/Mac
-      const proc = spawn('python', [this.predictScript]);
+      const pythonCommand = this.getPythonCommand();
+      this.logger.log(`running inference with ${pythonCommand} ${this.predictScript}`);
+
+      const proc = spawn(pythonCommand, [this.predictScript]);
 
       let stdout = '';
       let stderr = '';
@@ -30,11 +41,16 @@ export class CalculatorService {
       proc.stderr.on('data', (chunk: Buffer) => { stderr += chunk.toString(); });
 
       proc.on('close', (code) => {
+        this.logger.log(`inference process exited with code ${code}`);
+
         if (code !== 0) {
+          this.logger.error(`inference stderr: ${stderr.trim() || '(empty)'}`);
           reject(new InternalServerErrorException(`Model inference gagal: ${stderr.trim()}`));
           return;
         }
+
         try {
+          this.logger.log(`inference stdout: ${stdout.trim()}`);
           resolve(JSON.parse(stdout) as PythonResult);
         } catch {
           reject(new InternalServerErrorException(`Output Python tidak valid: ${stdout}`));
@@ -42,6 +58,7 @@ export class CalculatorService {
       });
 
       proc.on('error', (err) => {
+        this.logger.error(`failed to spawn python process: ${err.message}`);
         reject(new InternalServerErrorException(`Gagal menjalankan Python: ${err.message}`));
       });
 
