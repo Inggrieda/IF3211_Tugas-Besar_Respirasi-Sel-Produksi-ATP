@@ -22,6 +22,10 @@ RUN cd apps/api \
 COPY apps/api ./apps/api
 COPY apps/model ./apps/model
 
+WORKDIR /app/apps/model
+
+RUN python3 -m nbconvert --to notebook --execute model.ipynb --inplace --ExecutePreprocessor.timeout=0
+
 WORKDIR /app/apps/api
 
 RUN npm run build
