@@ -346,7 +346,7 @@ export default function ATPDashboardCompact() {
 
                   <ResultCard
                     title="Estimasi ATP"
-                    value={`${hasil.atp.toFixed(2)} mol`}
+                    value={`${hasil.atp.toFixed(2)} ATP`}
                   />
                 </div>
 
