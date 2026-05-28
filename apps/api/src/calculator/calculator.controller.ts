@@ -23,7 +23,7 @@ export class CalculatorController {
   @ApiResponse({ status: 400, description: 'Input tidak valid' })
   calculate(@Body() dto: CalculateRequestDto): Promise<CalculateResponseDto> {
     this.logger.log(
-      `calculate request received: activity=${dto.activity}, weight=${dto.weight}, duration=${dto.duration}, age=${dto.age}, gender=${dto.gender}`,
+      `calculate request received: activity=${dto.activity}, intensity=${dto.intensity}, weight=${dto.weight}, duration=${dto.duration}, age=${dto.age}, gender=${dto.gender}`,
     );
 
     return this.calculatorService.calculate(dto);

@@ -21,6 +21,9 @@ export class ModelPredictionDto {
 
   @ApiProperty({ example: 'High', description: 'Level intensitas: Low / Medium / High / Very High' })
   intensity_level: string;
+
+  @ApiProperty({ example: 'Linear Regression', description: 'Model MET terbaik berdasarkan hasil evaluasi training' })
+  recommended_model: string;
 }
 
 export class CalculateResponseDto {

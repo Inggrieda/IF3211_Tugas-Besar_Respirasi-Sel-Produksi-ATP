@@ -25,4 +25,10 @@ export class CalculateRequestDto {
       'Walking, Water Activities, Winter Activities',
   })
   activity: string;
+
+  @ApiProperty({
+    example: 'High',
+    description: 'Intensitas aktivitas. Nilai valid: Low, Medium, High, Very High',
+  })
+  intensity: string;
 }

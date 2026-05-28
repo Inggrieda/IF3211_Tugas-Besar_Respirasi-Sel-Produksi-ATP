@@ -218,3 +218,6 @@ __marimo__/
 .streamlit/secrets.toml
 node_modules
 apps/model/artifacts/
+apps/api/dist-dev/
+apps/web/.next/
+apps/web/.next-dev/

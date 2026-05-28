@@ -6,12 +6,14 @@ import { CalculateResponseDto, ModelPredictionDto } from './dto/calculate-respon
 
 interface PythonResult {
   met: number;
+  calories: number;
   lr_calories: number;
   rf_calories: number;
   workout_type: string;
   description: string;
   bmi: number;
   intensity_level: string;
+  recommended_model: string;
 }
 
 @Injectable()
@@ -69,6 +71,7 @@ export class CalculatorService {
         age: input.age,
         gender: input.gender,
         activity: input.activity,
+        intensity: input.intensity,
       }));
       proc.stdin.end();
     });
@@ -78,7 +81,7 @@ export class CalculatorService {
     const result = await this.runInference(input);
 
     const durationHours = input.duration / 60;
-    const calories = result.rf_calories;
+    const calories = result.calories;
     const atp = parseFloat((calories / 7.3).toFixed(2));
 
     const prediction: ModelPredictionDto = {
@@ -89,6 +92,7 @@ export class CalculatorService {
       rf_calories: result.rf_calories,
       bmi: result.bmi,
       intensity_level: result.intensity_level,
+      recommended_model: result.recommended_model,
     };
 
     return {

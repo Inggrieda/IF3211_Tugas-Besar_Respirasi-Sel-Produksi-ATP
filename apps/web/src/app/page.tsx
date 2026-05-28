@@ -19,6 +19,33 @@ const ACTIVITIES = [
   "Winter Activities",
 ];
 
+const INTENSITIES = [
+  {
+    value: "Low",
+    label: "Ringan",
+    cue: "Masih bisa ngobrol normal",
+    example: "jalan santai, stretching",
+  },
+  {
+    value: "Medium",
+    label: "Sedang",
+    cue: "Napas naik, masih bisa bicara pendek",
+    example: "jalan cepat, cycling santai",
+  },
+  {
+    value: "High",
+    label: "Berat",
+    cue: "Napas berat, sulit bicara panjang",
+    example: "lari sedang, olahraga intens",
+  },
+  {
+    value: "Very High",
+    label: "Sangat berat",
+    cue: "Hanya bisa bicara 1-2 kata",
+    example: "sprint, HIIT, running cepat",
+  },
+];
+
 interface AnalysisResult {
   prediction: {
     met: number;
@@ -28,6 +55,7 @@ interface AnalysisResult {
     rf_calories: number;
     bmi: number;
     intensity_level: string;
+    recommended_model: string;
   };
   weight: number;
   duration_minutes: number;
@@ -50,6 +78,7 @@ export default function ATPDashboardCompact() {
   const [usia, setUsia] = useState("");
   const [gender, setGender] = useState("");
   const [aktivitas, setAktivitas] = useState("");
+  const [intensitas, setIntensitas] = useState("");
 
   const [hasil, setHasil] = useState<AnalysisResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -61,7 +90,7 @@ export default function ATPDashboardCompact() {
     const dur = parseFloat(durasi);
     const umur = parseFloat(usia);
 
-    if (!bb || !tb || !dur || !umur || !gender || !aktivitas) {
+    if (!bb || !tb || !dur || !umur || !gender || !aktivitas || !intensitas) {
       setError("Lengkapi semua field sebelum menganalisis.");
       return;
     }
@@ -82,6 +111,7 @@ export default function ATPDashboardCompact() {
           age: umur,
           gender,
           activity: aktivitas,
+          intensity: intensitas,
         }),
       });
 
@@ -117,7 +147,7 @@ export default function ATPDashboardCompact() {
         </div>
 
         {/* MAIN GRID */}
-        <div className="grid lg:grid-cols-2 gap-6">
+        <div className="grid lg:grid-cols-2 gap-6 items-start">
           {/* INPUT PANEL */}
           <div className="bg-white rounded-3xl border border-[#E5E5E5] p-8 shadow-sm">
             <div className="flex items-center gap-3 mb-8">
@@ -210,6 +240,51 @@ export default function ATPDashboardCompact() {
                   ))}
                 </select>
               </div>
+
+              <div className="bg-[#F8F8F8] rounded-2xl p-5 border border-[#E5E5E5] col-span-2">
+                <div className="flex flex-col gap-1 mb-4">
+                  <label className="text-sm font-semibold text-[#14213D]">
+                    Intensitas
+                  </label>
+                  <p className="text-xs text-[#666]">
+                    Pilih berdasarkan napas dan kemampuan bicara saat aktivitas.
+                  </p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-3">
+                  {INTENSITIES.map((level) => {
+                    const selected = intensitas === level.value;
+
+                    return (
+                      <button
+                        key={level.value}
+                        type="button"
+                        onClick={() => setIntensitas(level.value)}
+                        className={`text-left rounded-xl border p-4 transition-all ${
+                          selected
+                            ? "border-[#FCA311] bg-[#FCA311]/10 shadow-sm"
+                            : "border-[#E5E5E5] bg-white hover:border-[#FCA311]/60"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="text-sm font-bold text-[#14213D]">
+                            {level.label}
+                          </span>
+                          <span className="text-xs font-semibold text-[#777]">
+                            {level.value}
+                          </span>
+                        </div>
+                        <p className="mt-2 text-xs leading-relaxed text-[#555]">
+                          {level.cue}
+                        </p>
+                        <p className="mt-1 text-[11px] leading-relaxed text-[#888]">
+                          Contoh: {level.example}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
 
             {error && (
@@ -265,12 +340,12 @@ export default function ATPDashboardCompact() {
                   />
 
                   <ResultCard
-                    title="Kalori yang Dihasilkan"
+                    title="Estimasi Kalori"
                     value={`${hasil.calories.toFixed(0)} kcal`}
                   />
 
                   <ResultCard
-                    title="ATP"
+                    title="Estimasi ATP"
                     value={`${hasil.atp.toFixed(2)} mol`}
                   />
                 </div>
@@ -320,7 +395,7 @@ export default function ATPDashboardCompact() {
                 </div> */}
               </>
             ) : (
-              <div className="h-full flex items-center justify-center text-center text-white/60 border border-white/10 rounded-3xl py-20">
+              <div className="flex items-center justify-center text-center text-white/60 border border-white/10 rounded-2xl px-6 py-14">
                 {isLoading
                   ? "Memproses data dengan model ML..."
                   : "Isi data pengguna lalu tekan Analisis ATP."}
@@ -374,24 +449,6 @@ function ResultCard({ title, value }: { title: string; value: string }) {
     <div className="bg-white/10 border border-white/10 rounded-2xl p-5">
       <p className="text-sm text-white/60">{title}</p>
       <h3 className="mt-3 text-2xl font-bold">{value}</h3>
-    </div>
-  );
-}
-
-function ProgressBar({ label, value }: { label: string; value: number }) {
-  return (
-    <div>
-      <div className="flex justify-between mb-2 text-sm">
-        <span>{label}</span>
-        <span>{value}%</span>
-      </div>
-
-      <div className="w-full h-3 bg-white/10 rounded-full overflow-hidden">
-        <div
-          className="h-full bg-[#FCA311] rounded-full"
-          style={{ width: `${value}%` }}
-        />
-      </div>
     </div>
   );
 }
