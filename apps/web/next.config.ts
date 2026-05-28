@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  ...(process.env.NODE_ENV === "development" && { distDir: ".next-dev" }),
+  distDir:
+    process.env.VERCEL || process.env.NODE_ENV !== "development"
+      ? ".next"
+      : ".next-dev",
 };
 
 export default nextConfig;
